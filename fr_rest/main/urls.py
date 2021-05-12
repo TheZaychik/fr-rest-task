@@ -7,5 +7,6 @@ urlpatterns = [
     path('questions', views.questions, name='questions'),
     path('userpolls', views.user_polls, name='user_polls'),
     path('auth', views.auth, name='auth'),
+    path('completedpolls', views.completed_polls, name='completed_polls')
 
 ]

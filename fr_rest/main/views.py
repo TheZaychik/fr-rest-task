@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -92,4 +93,40 @@ def auth(request):
 
 @api_view(['POST', 'GET'])
 def user_polls(request):
-    pass
+    if request.method == 'GET':
+        polls = models.Poll.objects.all()
+        polls_questions = []
+        for p in polls:
+            if p.start_date < datetime.now(tz=timezone.utc) < p.end_date:
+                polls_questions.append({
+                    'poll_id': p.id,
+                    'name': p.name,
+                    'start_date': p.start_date,
+                    'end_date': p.end_date,
+                    'description': p.description,
+                    'questions': subfunctions.get_questions_for_polls(p.id)
+                })
+        return Response(polls_questions, status=200)
+    else:
+        if not (request.data.get('user_id') and request.data.get('polls')):
+            return Response(status=400)
+        cUser = subfunctions.get_c_user_or_none_by_id(request.data.get('user_id'))
+        if not cUser:
+            cUser = models.CUser(user_id=request.data.get('user_id'))
+            cUser.competed_polls = []
+        polls = request.data['polls']
+        for p in polls:
+            if not p['poll_id'] in cUser.competed_polls:
+                cUser.competed_polls.append(p)
+        cUser.save()
+        return Response(status=200)
+
+
+@api_view(['POST'])
+def completed_polls(request):
+    if not request.data.get('user_id'):
+        return Response(status=400)
+    cUser = subfunctions.get_c_user_or_none_by_id(request.data.get('user_id'))
+    if not cUser:
+        return Response(status=400)
+    return Response(cUser.competed_polls, status=200)

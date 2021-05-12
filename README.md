@@ -60,12 +60,156 @@ DATABASES = {
 ``$ python3 manage.py migrate``
 11. Запустить решение  
 ``$ python3 manage.py runserver 0.0.0.0:8080``
->Для запуска тестов используйте    
-``$ python3 manage.py test``
 ***
 #### Документация по API
-
-
-
-
-
+### /polls ['POST', 'PATCH', 'DELETE', 'GET'] 
+- name - имя голосования
+- start_date - начало голосования
+- end_date - конец голосования
+- description - описание голосования 
+- Методы:
+   * POST - создание голосования
+   * PATCH - изменение голосования
+   * DELETE - удаление голосования
+   * GET - список ВСЕХ голосований с вопросами
+    
+Пример запроса:    
+```json
+{
+    "name": "Poll 1",
+    "start_date": "2021-05-12T07:24:08.023058",
+    "end_date": "2021-05-13T07:24:08.023058",
+    "description": "Standart poll"
+}
+```
+Пример ответа:
+```json
+[
+    {
+        "poll_id": 1,
+        "name": "Poll 1",
+        "start_date": "2021-05-12T07:24:08.023058Z",
+        "end_date": "2021-05-13T07:24:08.023058Z",
+        "description": "Standart poll",
+        "questions": [
+            {
+                "poll": 1,
+                "type": "one_variant",
+                "question": "How are you?",
+                "answers": [
+                    "1.Good",
+                    "2.Normal",
+                    "3.Bad"
+                ]
+            }
+        ]
+    }
+]
+```
+### /questions ['POST', 'PATCH', 'DELETE']
+- poll_name - имя голосования, к которому привязывается вопрос
+- type - тип голосования (ответ текстом, ответ с выбором одного варианта, ответ с выбором нескольких вариантов)
+- question - вопрос голосования
+- answers - варианты ответа 
+- Методы:
+   * POST - создание голосования
+   * PATCH - изменение голосования
+   * DELETE - удаление голосования
+   * GET - список всех голосований с вопросами
+    
+Пример запроса:    
+```json
+{
+    "poll_name": "Poll 1",
+    "type" : "one_variant",
+    "question": "How are you?",
+    "answers": [
+        "1.Good",
+        "2.Normal",
+        "3.Bad"
+    ]
+}
+```
+### /auth ['POST', 'GET']
+- username - имя пользователя
+- password - пароль пользователя
+- Методы:
+   * POST - авторизация
+   * GET - выход из системы
+    
+Пример запроса:    
+```json
+{
+    "username":"test_user",
+    "password":"test_user"
+}
+```
+### /userpolls ['POST', 'GET']
+- user_id - id пользователя
+- polls - список голосований
+- poll_id - id голосования
+- "How are you?" - словарь типа {вопрос : [ответ(ы)]}
+- Методы:
+   * POST - прохождение голосования
+   * GET - просмотр активных голосований
+    
+Пример запроса:    
+```json
+{
+    "user_id": 1,
+    "polls": [
+        {
+            "poll_id": 1,
+            "How are you?": [
+                "1.Good"
+            ]
+        }
+    ]
+}
+```
+Пример ответа:
+```json
+[
+    {
+        "poll_id": 1,
+        "name": "Poll 1",
+        "start_date": "2021-05-12T07:24:08.023058Z",
+        "end_date": "2021-05-13T07:24:08.023000Z",
+        "description": "Standart poll",
+        "questions": [
+            {
+                "poll": 1,
+                "type": "one_variant",
+                "question": "How are you?",
+                "answers": [
+                    "1.Good",
+                    "2.Normal",
+                    "3.Bad"
+                ]
+            }
+        ]
+    }
+]
+```
+### /userpolls ['POST', 'GET']
+- user_id - id пользователя
+- Методы:
+   * POST - просмотр пройденных голосований
+    
+Пример запроса:    
+```json
+{
+    "user_id": 1
+}
+```
+Пример ответа:
+```json
+[
+    {
+        "poll_id": 1,
+        "How are you?": [
+            "1.Good"
+        ]
+    }
+]
+```

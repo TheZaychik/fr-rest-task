@@ -64,4 +64,17 @@ class CUserSerializer(serializers.Serializer):
     competed_polls = serializers.JSONField()  # { poll_id : { question: [answers] } }
 
     def create(self, validated_data):
-        return models.CUser(**validated_data)
+        instance = models.CUser(**validated_data)
+        try:
+            instance.save()
+        except Exception as e:
+            return e
+        return 0
+
+    def update(self, instance, validated_data):
+        instance.competed_polls = validated_data.get('competed_polls')
+        try:
+            instance.save()
+        except Exception as e:
+            return e
+        return 0

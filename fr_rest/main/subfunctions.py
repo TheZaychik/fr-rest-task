@@ -17,6 +17,14 @@ def get_question_or_none_by_question(question):
     return instance
 
 
+def get_c_user_or_none_by_id(id):
+    try:
+        instance = models.CUser.objects.all().get(user_id=id)
+    except Exception:
+        return None
+    return instance
+
+
 def get_questions_for_polls(poll_id):
     list_questions = []
     questions = models.Question.objects.all().filter(poll_id=poll_id)
